@@ -226,3 +226,12 @@ $dirNames	= $dirObj->getDirectoryNames(); // array of strings, cheaper than popu
 ```
 $clonedDir	= $dirObj->getClone();
 ```
+
+#### Lock Files
+```
+
+$filename	= "my.lock";
+$maxAge	= 30; //if not updated in 30 seconds we assume the lock is dead
+$lockObj	= \MTM\FS\Factories::getFiles()->getLockFile($filename, $maxAge);
+```
+
