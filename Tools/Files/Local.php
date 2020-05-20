@@ -245,21 +245,27 @@ class Local
 				$type	= strtolower($type);
 
 				if ($type == "append") {
-					$fp			= fopen($fileObj->getPathAsString(), "a");
+					//the "n" means in mode means fopen will not block if a pipe is removed
+					$fp			= @fopen($fileObj->getPathAsString(), "an");
 				} elseif ($type == "prepend") {
-					$fp			= fopen($fileObj->getPathAsString(), "x");
+					$fp			= @fopen($fileObj->getPathAsString(), "xn");
 				} else {
 					throw new \Exception("Invalid Type: " . $type);
 				}
 
-				$bWrites	= fwrite($fp, $data);
-				fclose($fp);
-				
-				if ($bWrites === false) {
-					//failed to write, maybe file does not exist
-					throw new \Exception("Failed Write: " . $fileObj->getPathAsString());
-				} elseif ($bWrites != $dLength) {
-					throw new \Exception("Failed Complete Write: " . $fileObj->getPathAsString());
+				if (is_resource($fp) === true) {
+					
+					$bWrites	= fwrite($fp, $data);
+					fclose($fp);
+					
+					if ($bWrites === false) {
+						//failed to write, maybe file does not exist
+						throw new \Exception("Failed Write: " . $fileObj->getPathAsString());
+					} elseif ($bWrites != $dLength) {
+						throw new \Exception("Failed Complete Write: " . $fileObj->getPathAsString());
+					}
+				} else {
+					throw new \Exception("Cannot add to a file, error opening for writing");
 				}
 			}
 			
