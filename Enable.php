@@ -25,6 +25,15 @@ if (defined("MTM_FS_BASE_PATH") === false) {
 				$memPath	= DIRECTORY_SEPARATOR . "dev" . DIRECTORY_SEPARATOR . "shm" . DIRECTORY_SEPARATOR;
 				if (is_writable($memPath) === true) {
 					define("MTM_FS_TEMP_PATH", $memPath);
+				} else {
+					
+					//FHS mandated world writable: /var/tmp
+					//https://www.pathname.com/fhs/pub/fhs-2.3.html 
+					$tmpPath	= DIRECTORY_SEPARATOR . "var" . DIRECTORY_SEPARATOR . "tmp" . DIRECTORY_SEPARATOR;
+					if (is_writable($tmpPath) === true) {
+						//use this over sys_get_temp_dir() on linux as e.g. httpd will overide the std /tmp/ with a private version
+						define("MTM_FS_TEMP_PATH", $tmpPath);
+					}
 				}
 			}
 			if (defined("MTM_FS_TEMP_PATH") === false) {

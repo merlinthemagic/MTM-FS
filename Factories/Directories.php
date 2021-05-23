@@ -25,7 +25,7 @@ class Directories extends Base
 	}	
 	public function getDirectory($path=null)
 	{
-		if ($path !== null) {
+		if ($path != "") {
 			$pDir	= null;
 			$dirs	= $this->getSplitPath($path);
 			foreach ($dirs as $dir) {
@@ -44,7 +44,6 @@ class Directories extends Base
 			$dirObj	= new \MTM\FS\Models\Directories\Directory();
 			$dirObj->setTool($this->getLocalDirectoriesTool());
 		}
-		
 		return $dirObj;
 	}
 	public function getDirectoryFromFilePath($filePath)
@@ -58,14 +57,14 @@ class Directories extends Base
 			if (DIRECTORY_SEPARATOR == "/") {
 				//linux paths start with /
 				if (count($parts) > 0) {
-					$dirPath	= DIRECTORY_SEPARATOR . implode($parts, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+					$dirPath	= DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $parts) . DIRECTORY_SEPARATOR;
 				} else {
 					$dirPath	= DIRECTORY_SEPARATOR;
 				}
 				
 			} else {
 				//windows, the first element is the drive letter + ":"
-				$dirPath	= implode($dirs, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+				$dirPath	= implode(DIRECTORY_SEPARATOR, $dirs) . DIRECTORY_SEPARATOR;
 			}
 			
 			return $this->getDirectory($dirPath);
@@ -121,6 +120,7 @@ class Directories extends Base
 	public function getNonTempDirectory($baseDir=null)
 	{
 		//this directory will not be deleted at the end of the session
+		//however it will be removed on reboot.
 		//we simply find an available name and create it
 		if ($baseDir === null) {
 			$baseDir	= $this->getDirectory(MTM_FS_TEMP_PATH);
