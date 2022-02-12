@@ -25,8 +25,11 @@ class Directories extends Base
 	}	
 	public function getDirectory($path=null)
 	{
+		$dirObj	= new \MTM\FS\Models\Directory();
+		$dirObj->setTool($this->getLocalDirectoriesTool());
+		
 		if ($path != "") {
-			$pDir	= null;
+			$pDir	= $dirObj;
 			$dirs	= $this->getSplitPath($path);
 			foreach ($dirs as $dir) {
 				$dirObj	= new \MTM\FS\Models\Directory();
@@ -39,10 +42,6 @@ class Directories extends Base
 				}
 				$pDir	= $dirObj;
 			}
-			
-		} else {
-			$dirObj	= new \MTM\FS\Models\Directories\Directory();
-			$dirObj->setTool($this->getLocalDirectoriesTool());
 		}
 		return $dirObj;
 	}

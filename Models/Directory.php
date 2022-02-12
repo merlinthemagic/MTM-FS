@@ -67,8 +67,8 @@ class Directory
 		$pDirObj	= $this->getParent();
 		if ($pDirObj !== null) {
 			$strPath	.= $pDirObj->getPathAsString();
-		} elseif ($this->getTool()->getDirSep() == "/") {
-			//Linux and no parent
+		} elseif ($this->getTool()->getDirSep() == "/" && $this->getName() != "") {
+			//Linux, no parent and the directory has a name. No name would be root path
 			$strPath	.= $this->getTool()->getDirSep();
 		}
 		$strPath	.= $this->getName() . $this->getTool()->getDirSep();

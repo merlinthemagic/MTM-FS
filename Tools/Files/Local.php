@@ -265,7 +265,7 @@ class Local
 						throw new \Exception("Failed Complete Write: " . $fileObj->getPathAsString());
 					}
 				} else {
-					throw new \Exception("Cannot add to a file, error opening for writing: " . $fileObj->getPathAsString());
+					throw new \Exception("Cannot add to a file, error opening for writing: " . $fileObj->getPathAsString(), 92987);
 				}
 			}
 			
