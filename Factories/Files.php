@@ -73,7 +73,13 @@ class Files extends Base
 	    }
 	    if ($baseDir === null) {
 	    	$baseDir	= \MTM\FS\Factories::getDirectories()->getTempDirectory();
-	    } elseif ($baseDir->getWritable() === false) {
+	    } elseif (is_string($baseDir) === true) {
+	    	$baseDir	= \MTM\FS\Factories::getDirectories()->getDirectory($baseDir);
+	    } elseif ($baseDir instanceof \MTM\FS\Models\Directory === false) {
+	    	throw new \Exception("Invalid directory input");
+	    }
+	    
+	    if ($baseDir->getWritable() === false) {
 	    	throw new \Exception("Cannot generate temp file in a directory that is not writable");
 	    }
 	    $sPath	= $baseDir->getPathAsString();

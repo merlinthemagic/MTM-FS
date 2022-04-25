@@ -145,7 +145,7 @@ class Local
 				if ($type === null) {
 					$valid	= @mkdir($cPath);
 					if ($valid === false) {
-						throw new \Exception("Failed to create directory: ".$cPath." in path: " . $dirObj);
+						throw new \Exception("Failed to create directory: ".$cPath." in path: " . $dirObj->getPathAsString());
 					}
 				}
 			}
