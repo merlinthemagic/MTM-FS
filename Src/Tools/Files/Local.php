@@ -1,5 +1,5 @@
 <?php
-//© 2019 Martin Madsen
+//ï¿½ 2019 Martin Madsen
 namespace MTM\FS\Tools\Files;
 
 class Local
@@ -13,7 +13,7 @@ class Local
 			if ($throw === false) {
 				return false;
 			} else {
-				throw new \Exception("Not a File: " . $fileObj->getPathAsString());
+				throw new \Exception("Not a File: " . $fileObj->getPathAsString(), 92980);
 			}
 		}
 	}
