@@ -237,7 +237,7 @@ class Local
 	public function addContent($fileObj, $data, $type)
 	{
 		$fileType	= $this->getType($fileObj);
-		if ($fileType == "file" || $fileType == "pipe") {
+		if ($fileType == "file" || $fileType == "pipe" || $fileType == "link") {
 			
 			//add content implies the file exists already
 			$dLength	= strlen($data);
