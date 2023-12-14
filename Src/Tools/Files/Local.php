@@ -36,28 +36,28 @@ class Local
 			$input = $input->getPathAsString();
 		}
 		
-		//can we eliminate the exist call? i think get type returns false when file is not there
-		$exists	= file_exists($input);
-		if ($exists === true) {
-			$type	= filetype($input);
-			if ($type == "fifo") {
-				return "pipe";
-			} elseif ($type == "file") {
-				return "file";
-			} elseif ($type == "dir") {
-				return "directory";
-			} elseif ($type == "socket") {
-				return "socket";
-			} elseif ($type == "link") {
-				return "link";
+		//Eliminated the exist call. Get type returns false when file is not there
+		$type	= @filetype($input);
+		if ($type === false) {
+			if (file_exists($input) === false) {
+				//null return since the file does not exist
+				return null;
 			} else {
-				//fifo, char, dir, block, link, file, socket and unknown
-				throw new \Exception("Unknown Type: " . $type);
+				throw new \Exception("filetype() failed for: ".$input);
 			}
-			
+		} elseif ($type == "fifo") {
+			return "pipe";
+		} elseif ($type == "file") {
+			return "file";
+		} elseif ($type == "dir") {
+			return "directory";
+		} elseif ($type == "socket") {
+			return "socket";
+		} elseif ($type == "link") {
+			return "link";
 		} else {
-			//null return since the file does not exist
-			return null;
+			//fifo, char, dir, block, link, file, socket and unknown
+			throw new \Exception("Unknown Type: " . $type);
 		}
 	}
 	public function getOwner($fileObj)
