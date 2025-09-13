@@ -143,12 +143,13 @@ class Directories extends Base
 				if (substr_count($tmpDir->getPathAsString(), DIRECTORY_SEPARATOR) > 1) {
 					//only allow the delete process if we are at least 2x levels into the file system tree
 					//a minimal guard against wiping the entire file system
+					//monitor on linux if MTM_FS_TEMP_PATH=/dev/shm/:    watch -n1 'ls /dev/shm/ ; ps ax | grep -i "_MTM" | grep -v "watch" ;'
 
 					$procPid	= getmypid();
 					$loopSleep	= 3;
 					$strCmd		= "(";
 					$strCmd		.= " nohup sh -c '";
-					$strCmd		.= " _MTM=\"".__METHOD__."\";"; //Give admins an idea what this weird process is
+					$strCmd		.= " _MTM_WHAT_IS_THIS=\"".__METHOD__."\";"; //Give admins an idea what this weird process is
 					$strCmd		.= " while";
 					$strCmd		.= " [ -n \"".$procPid."\" -a -e /proc/" . $procPid . " ];";
 					$strCmd		.= " do";
