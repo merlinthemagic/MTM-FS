@@ -1,25 +1,26 @@
 <?php
-//© 2019 Martin Madsen
+//ï¿½ 2019 Martin Madsen
 namespace MTM\FS\Factories;
 
 class Directories extends Base
 {
 	//USE: $dirObj	= \MTM\FS\Factories::getDirectories()->getDirectory("/tmp/");
 	
+	protected $_sessTmp=null;
+	
 	public function __construct()
 	{
-		$this->_cStore["baseTmpDir"]	= null;
-		$this->_cStore["tmpDirs"]		= array();
+		$this->_s["tmpDirs"]		= array();
 		register_shutdown_function(array($this, '__destruct'));
 	}
 	public function __destruct()
 	{
-		if (count($this->_cStore["tmpDirs"]) > 0) {
-			$dirObjs					= $this->_cStore["tmpDirs"];
-			$this->_cStore["tmpDirs"]	= array();
+		if (count($this->_s["tmpDirs"]) > 0) {
+			$dirObjs					= $this->_s["tmpDirs"];
+			$this->_s["tmpDirs"]	= array();
 			foreach ($dirObjs as $id => $dirObj) {
 				$dirObj->delete();
-				unset($this->_cStore["tmpDirs"][$id]);
+				unset($this->_s["tmpDirs"][$id]);
 			}
 		}
 	}	
@@ -80,22 +81,16 @@ class Directories extends Base
 	}
 	public function getLocalDirectoriesTool()
 	{
-		if (array_key_exists(__FUNCTION__, $this->_cStore) === false) {
-			$this->_cStore[__FUNCTION__]	= new  \MTM\FS\Tools\Directories\Local();
+		if (array_key_exists(__FUNCTION__, $this->_s) === false) {
+			$this->_s[__FUNCTION__]	= new  \MTM\FS\Tools\Directories\Local();
 		}
-		return $this->_cStore[__FUNCTION__];
+		return $this->_s[__FUNCTION__];
 	}
 	public function getTempDirectory($baseDir=null)
 	{
 		//this directory and all content is deleted when php terminates
 		if ($baseDir === null) {
-			if ($this->_cStore["baseTmpDir"] === null) {
-				$path		= MTM_FS_TEMP_PATH . uniqid("MTM-Temp-");
-				$baseTmpDir	= $this->getDirectory($path);
-				$this->_cStore["baseTmpDir"]	= $baseTmpDir;
-				$this->setAsTempDir($baseTmpDir);
-			}
-			$baseDir	= $this->_cStore["baseTmpDir"];
+			$baseDir	= $this->getSessionTempDir();
 		} elseif (is_string($baseDir) === true) {
 			$baseDir	= $this->getDirectory($baseDir);
 		}
@@ -113,7 +108,7 @@ class Directories extends Base
 	}
 	public function setAsTempDir($dirObj)
 	{
-		$this->_cStore["tmpDirs"][]   = $dirObj;
+		$this->_s["tmpDirs"][]   = $dirObj;
 		return $this;
 	}
 	public function getNonTempDirectory($baseDir=null)
@@ -135,5 +130,42 @@ class Directories extends Base
 				return $newDir;
 			}
 		}
+	}
+	private function getSessionTempDir()
+	{
+		if ($this->_sessTmp === null) {
+			$path					= MTM_FS_TEMP_PATH.uniqid("MTM-Temp-");
+			$tmpDir					= $this->getDirectory($path);
+			$this->setAsTempDir($tmpDir);
+			if (DIRECTORY_SEPARATOR == "/") {
+				//we need a guard process that can clean up the temp dir on hard exit, just like MTM-Shells with a bash creation
+				//start a while loop. When process is no longer, we clean up if needed
+				if (substr_count($tmpDir->getPathAsString(), DIRECTORY_SEPARATOR) > 1) {
+					//only allow the delete process if we are at least 2x levels into the file system tree
+					//a minimal guard against wiping the entire file system
+
+					$procPid	= getmypid();
+					$loopSleep	= 3;
+					$strCmd		= "(";
+					$strCmd		.= " nohup sh -c '";
+					$strCmd		.= " _MTM=\"".__METHOD__."\";"; //Give admins an idea what this weird process is
+					$strCmd		.= " while";
+					$strCmd		.= " [ -n \"".$procPid."\" -a -e /proc/" . $procPid . " ];";
+					$strCmd		.= " do";
+					$strCmd		.= " sleep ".$loopSleep."s;";
+					$strCmd		.= " done;";
+					$strCmd		.= " sleep ".$loopSleep."s ;";
+					$strCmd		.= " rm -rf \"".$tmpDir->getPathAsString()."\"; ";
+					$strCmd		.= " ' & ) > /dev/null 2>&1;";
+				
+					@exec($strCmd, $rData, $status);
+					if ($status != 0) {
+						throw new \Exception("Failed to excute shell setup: ".$status, 1111);
+					}
+				}
+			}
+			$this->_sessTmp		= $tmpDir;
+		}
+		return $this->_sessTmp;
 	}
 }

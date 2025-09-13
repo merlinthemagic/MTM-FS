@@ -1,5 +1,5 @@
 <?php
-//© 2019 Martin Madsen
+//ï¿½ 2019 Martin Madsen
 namespace MTM\FS\Factories;
 
 class Files extends Base
@@ -8,17 +8,17 @@ class Files extends Base
 
 	public function __construct()
 	{
-	    $this->_cStore["tmpFiles"]	= array();
+	    $this->_s["tmpFiles"]	= array();
 		register_shutdown_function(array($this, '__destruct'));
 	}
 	public function __destruct()
 	{
-		if (count($this->_cStore["tmpFiles"]) > 0) {
-			$fileObjs					= $this->_cStore["tmpFiles"];
-			$this->_cStore["tmpFiles"]	= array();
+		if (count($this->_s["tmpFiles"]) > 0) {
+			$fileObjs					= $this->_s["tmpFiles"];
+			$this->_s["tmpFiles"]	= array();
 			foreach ($fileObjs as $id => $fileObj) {
 				$fileObj->delete();
-				unset($this->_cStore["tmpFiles"][$id]);
+				unset($this->_s["tmpFiles"][$id]);
 			}
 		}
 	}
@@ -98,7 +98,7 @@ class Files extends Base
 	}
 	public function setAsTempFile($fileObj)
 	{
-		$this->_cStore["tmpFiles"][]   = $fileObj;
+		$this->_s["tmpFiles"][]   = $fileObj;
 		return $this;
 	}
 	public function getFileFromPath($filePath)
@@ -122,9 +122,9 @@ class Files extends Base
 	}
 	public function getLocalFileTool()
 	{
-		if (array_key_exists(__FUNCTION__, $this->_cStore) === false) {
-			$this->_cStore[__FUNCTION__]	= new \MTM\FS\Tools\Files\Local();
+		if (array_key_exists(__FUNCTION__, $this->_s) === false) {
+			$this->_s[__FUNCTION__]	= new \MTM\FS\Tools\Files\Local();
 		}
-		return $this->_cStore[__FUNCTION__];
+		return $this->_s[__FUNCTION__];
 	}
 }

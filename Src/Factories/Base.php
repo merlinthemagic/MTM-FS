@@ -1,10 +1,10 @@
 <?php
-//© 2019 Martin Madsen
+//ï¿½ 2019 Martin Madsen
 namespace MTM\FS\Factories;
 
 class Base
 {
-	protected $_cStore=array();
+	protected $_s=array();
 	
 	public function getSplitPath($path)
 	{
